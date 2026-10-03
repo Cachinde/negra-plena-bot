@@ -17,7 +17,18 @@ O bot inicia sessão com o número da empresa (QR nos logs ou código de emparel
    - `TIMEZONE=Africa/Luanda`
    - `BUSINESS_HOURS_START` / `BUSINESS_HOURS_END`
 4. Healthcheck: `/` (servidor interno em `PORT`, por defeito `3000`).
-5. Nos logs, ler o QR (ou código de emparelhamento) e ligar o WhatsApp da empresa.
+5. Ligue o WhatsApp da empresa:
+   - Abra `https://<sua-app>.up.railway.app/qr` no browser — mostra o QR em HTML (auto-refresh de 8 em 8s).
+   - Ou leia o QR nos logs (`Aparelhos ligados > Ligar um aparelho`).
+   - Se usar `BOT_NUMERO_REAL`, o código de emparelhamento também aparece em `/qr` e nos logs.
+   - Extras: `/qr.json` (estado + `qr_available`), `/qr.png` (só a imagem).
+
+## Endpoints HTTP (Railway)
+
+- `/` — JSON `{ status, whatsapp, empresa }` (healthcheck)
+- `/qr` (alias `/qrcode`, `/scan`) — página HTML com o QR para ligar o WhatsApp
+- `/qr.json` — JSON `{ whatsapp, qr_available, pairing_code }`
+- `/qr.png` — só a imagem PNG do QR (404 enquanto não há QR)
 
 ## Local
 
