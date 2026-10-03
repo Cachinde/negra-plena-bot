@@ -1,0 +1,12 @@
+node_modules/
+dist/
+temp/
+auth_info_baileys/
+.env
+.env.local
+*.log
+npm-debug.log*
+.DS_Store
+python_brain/
+.vscode/
+.idea/

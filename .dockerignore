@@ -1,0 +1,9 @@
+node_modules
+.git
+.env
+temp
+auth_info_baileys
+dist
+npm-debug.log
+python_brain
+README.md
