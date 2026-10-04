@@ -48,11 +48,11 @@ export class InteractiveMenu {
     }
 
     public isMenuTrigger(text: string): boolean {
+        // Só comandos exactos disparam o menu. Qualquer pergunta com mais
+        // palavras (ex. "qual é o preço da pizza?") vai para o cérebro.
         const t = text.trim().toLowerCase();
         if (!t) return false;
-        return /^(oi|ol[aá]|ola|bom dia|boa tarde|boa noite|menu|in[ií]cio|start|ajuda|help|pre[cç]o|pre[cç]os|pre[cç][aá]rio|marcar|marca[cç][aã]o|encomendar|encomenda)$/i.test(
-            t
-        ) || t.includes('menu') || t.includes('preç') || t.includes('prec');
+        return /^(oi|ol[aá]|ola|bom dia|boa tarde|boa noite|menu|in[ií]cio|start|ajuda|help|pre[cç]o|pre[cç]os|pre[cç][aá]rio|marcar|marca[cç][aã]o|encomendar|encomenda)$/i.test(t);
     }
 
     public resolveActionFromText(text: string): MenuActionId | null {
