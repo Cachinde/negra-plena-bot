@@ -228,7 +228,7 @@ ${main}
         this.latestQR = qr;
         this.lastQRAt = Date.now();
         try {
-            this.latestQRDataUrl = await QRCode.toDataURL(qr, { width: 280, margin: 1 });
+            this.latestQRDataUrl = await QRCode.toDataURL(qr, { width: 400, margin: 2, errorCorrectionLevel: 'H' });
         } catch (err) {
             this.logger.error({ err }, 'Falha ao gerar imagem do QR');
             this.latestQRDataUrl = null;
