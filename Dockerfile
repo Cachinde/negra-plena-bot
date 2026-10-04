@@ -10,6 +10,7 @@ RUN npm ci
 
 COPY index.ts ./
 COPY modules ./modules
+COPY assets ./assets
 
 RUN npx tsc && npm prune --omit=dev
 

@@ -4,6 +4,7 @@ Conector WhatsApp da **Negra Plena** em TypeScript (Baileys).
 O cérebro (Plenitude) corre à parte no Hugging Face Space: **brain-negra-plena**.
 
 O bot inicia sessão com o número da empresa (QR nos logs ou código de emparelhamento via `BOT_NUMERO_REAL`) e envia cada mensagem de cliente para `POST {API_URL}/escutar`.
+O horário comercial (`BUSINESS_HOURS_*`, `TIMEZONE`) só informa — fora dele o cérebro recebe `fora_expediente: true` (atendimento humano) mas é sempre chamado.
 
 ## Deploy Railway
 

@@ -1,6 +1,6 @@
 {
   "name": "negra_plena_bot",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Bot WhatsApp de atendimento da Negra Plena",
   "type": "module",
   "main": "dist/index.js",

@@ -10,6 +10,7 @@ import qrcode from 'qrcode-terminal';
 import QRCode from 'qrcode';
 import pino, { type Logger } from 'pino';
 import fs from 'fs';
+import * as pathModule from 'path';
 import ConfigManager from './ConfigManager.js';
 import { MessageProcessor } from './MessageProcessor.js';
 import { APIClient } from './APIClient.js';
@@ -59,9 +60,29 @@ export class BotCore {
     }
 
     private startHealthServer() {
+        const assetsRoot = pathModule.join(process.cwd(), 'assets');
         this.httpServer = http.createServer((req, res) => {
             const url = new URL(req.url || '/', 'http://localhost');
             const path = url.pathname.replace(/\/$/, '') || '/';
+
+            // Serve static assets (e.g., banner images)
+            if (path.startsWith('/assets/')) {
+                const assetPath = path.replace(/^\/assets\//, '');
+                const fullPath = pathModule.normalize(pathModule.join(assetsRoot, assetPath));
+                const insideRoot =
+                    fullPath === assetsRoot || fullPath.startsWith(assetsRoot + pathModule.sep);
+                if (!insideRoot || !fs.existsSync(fullPath) || !fs.statSync(fullPath).isFile()) {
+                    res.writeHead(404, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ status: 'error', message: 'Asset not found' }));
+                    return;
+                }
+                const data = fs.readFileSync(fullPath);
+                const ext = assetPath.split('.').pop()?.toLowerCase();
+                const mime = ext === 'png' ? 'image/png' : ext === 'jpg' || ext === 'jpeg' ? 'image/jpeg' : 'application/octet-stream';
+                res.writeHead(200, { 'Content-Type': mime, 'Content-Length': data.length });
+                res.end(data);
+                return;
+            }
 
             if (path === '/qr' || path === '/qrcode' || path === '/scan') {
                 const html = this.getQrPageHtml();
@@ -261,9 +282,12 @@ ${main}
 
             this.logger.info(`[${info.isGroup ? 'GRUPO' : 'PV'}] ${info.senderCrmFormat}`);
 
-            if (!info.isGroup && !this.messageProcessor.isBusinessOpen()) {
-                await this.sock.sendMessage(info.remoteJid, { text: this.config.AWAY_MESSAGE });
-                return;
+            // O horário comercial só INFORMA (fora dele = atendimento humano);
+            // o cérebro é SEMPRE chamado, a qualquer hora.
+            const foraExpediente =
+                !info.isGroup && !this.messageProcessor.isBusinessOpen();
+            if (foraExpediente) {
+                this.logger.info('Fora do horário comercial — a chamar o cérebro na mesma');
             }
 
             const clientKey = info.senderCrmFormat || info.senderNum;
@@ -319,6 +343,7 @@ ${main}
                 mensagem_id: info.messageId,
                 audio_base64: audioBase64,
                 ticket_aberto: this.tickets.getOpenTicket(clientKey)?.id || null,
+                fora_expediente: foraExpediente,
             };
 
             await this.sock.presenceSubscribe(info.remoteJid);

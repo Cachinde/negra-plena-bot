@@ -14,6 +14,8 @@ import {
     type MenuActionId,
 } from './BusinessCatalog.js';
 import { TicketManager } from './TicketManager.js';
+import fs from 'fs';
+import path from 'path';
 
 type ClientCtx = {
     numero: string;
@@ -167,6 +169,27 @@ export class InteractiveMenu {
         }
     }
 
+    private getBannerPath(action: MenuActionId): string | null {
+        const base = process.cwd();
+        const mapa: Partial<Record<MenuActionId, string>> = {
+            menu_principal: 'main.png',
+            ver_menu: 'main.png',
+            ver_precos: 'delicias.png',
+            encomendar: 'delicias.png',
+            marcar: 'delicias.png',
+        };
+        const ficheiro = mapa[action];
+        return ficheiro ? path.join(base, 'assets', ficheiro) : null;
+    }
+
+    private async sendBannerIfExists(sock: WASocket, jid: string, action: MenuActionId): Promise<void> {
+        const bannerPath = this.getBannerPath(action);
+        if (bannerPath && fs.existsSync(bannerPath)) {
+            const data = fs.readFileSync(bannerPath);
+            if (data.length === 0) return;
+            await sock.sendMessage(jid, { image: data });
+        }
+    }
     private async sendNativeButtons(
         sock: WASocket,
         jid: string,
