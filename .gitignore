@@ -10,3 +10,6 @@ npm-debug.log*
 python_brain/
 .vscode/
 .idea/
+
+python_brain/
+python_brain_novo/
