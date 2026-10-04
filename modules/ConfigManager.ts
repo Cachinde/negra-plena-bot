@@ -4,9 +4,19 @@ import fs from 'fs';
 import dotenv from 'dotenv';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const envPath = path.resolve(__dirname, '..', '.env');
-if (fs.existsSync(envPath)) {
-    dotenv.config({ path: envPath, override: false });
+// Procura o .env em todos os layouts: dev (modules/ -> raiz),
+// prod (dist/modules -> raiz) e pasta atual. Variáveis reais de
+// ambiente (ex. Railway Variables) têm sempre prioridade.
+const envCandidates = [
+    path.resolve(__dirname, '..', '.env'),
+    path.resolve(__dirname, '..', '..', '.env'),
+    path.resolve(process.cwd(), '.env'),
+];
+for (const candidate of envCandidates) {
+    if (fs.existsSync(candidate)) {
+        dotenv.config({ path: candidate, override: false });
+        break;
+    }
 }
 
 class ConfigManager {
